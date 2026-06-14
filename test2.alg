@@ -1,0 +1,10 @@
+BEGIN
+
+INTEGER C;	
+
+	C := 0;
+INCREMENT:
+	C := C + 1;
+        OUTPUT C;
+	GOTO INCREMENT
+END
