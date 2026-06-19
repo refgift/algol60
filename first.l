@@ -15,6 +15,12 @@ LETTER		[A-Z]
 %}
 
 %%
+{BG}*OUTPUT{BG}+\".+\"		{
+					bzero(text1,256);
+					sscanf(yytext," OUTPUT \"%256c\"", text1);
+					printf("	printf\(\"%%s \",\" %s);\n",text1);
+					}
+
 {BG}*OUTPUT{BG}+{LABEL}+		{
 					sscanf(yytext," OUTPUT %s", label);
 					printf("	printf\(\"%%d \", %s);\n",label);
@@ -29,11 +35,17 @@ LETTER		[A-Z]
 					printf("int %s;\n", label);
 				}
 {BG}*IF{BG}*.+{BG}*THEN+	{
-					
+					bzero(text1,256);
+					bzero(text2,256);
+					bzero(text3,256);					
 					sscanf(yytext," IF %s %s %s THEN", text1, text2 , text3);
 					printf("	if ( %s %s %s )", text1,text2,text3);
 				}
 {BG}*{LABEL}+{BG}*:={BG}*({LETTER}|{DIGIT})+{BG}*{ARITMETICS}*{BG}*({LETTER}|{DIGIT})*	{
+					bzero(text1,256);
+					bzero(text2,256);
+					bzero(text3,256);
+					bzero(text4,256);					
 					int s = sscanf(yytext, "%s := %s %s %s", text1, text2, text3 ,text4);
 					//printf("%s Scan Count: %d\n",yytext, s);
 					printf("\t%s=%s %s %s ; \n",text1, text2, text3 , text4);
