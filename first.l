@@ -55,7 +55,7 @@ LETTER		[A-Z]
 {BG}*END		printf("}\n");
 {BG}*GOTO{BG}+{LABEL}+	{ 
 				sscanf(yytext," GOTO %s", label); 
-				printf("	goto %s;\n", label); 
+				printf("	{ asm(\"pause\");goto %s;}\n", label); 
 			}
 ^{LABELDECL}		printf("%s\n",yytext);
 {BG}*			;
