@@ -1,4 +1,4 @@
-# ALGOL 60 Compiler
+# ALGOL 60 Like "first" Compiler
 - Started June 2026, expect daily progress.
 - 2 test programs to show translation to C programs that compile and run.
 - very simple subset of the language but I plan to eventually finish.
