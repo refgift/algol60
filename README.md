@@ -1,7 +1,7 @@
-# ALGOL 60 Like "first" Compiler
+# FIRST - A process language. Combine with pipes to create procedures.
 - Started June 2026, expect daily progress.
-- 2 test programs to show translation to C programs that compile and run.
-- very simple subset of the language but I plan to eventually finish.
+- Test programs to show translation to C programs that compile and run.
+- very simple subset of the ALGOL language without complexity.
 
 # Build
 - flex first.l
@@ -10,3 +10,6 @@
 - cc test.c -o test
 - ./test
 
+# Combining With Pipes
+- UNIX and LINUX have the pipe operator, |, in the shell enviroment of the Terminal.
+- ls -s | sort -n  for example
