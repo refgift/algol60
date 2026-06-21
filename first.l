@@ -16,21 +16,24 @@ LETTER		[A-Z]
 
 %%
 {BG}*OUTPUT{BG}+\".+\"		{
-					bzero(text1,256);
+					bzero(label,256);
 					sscanf(yytext," OUTPUT \"%256c\"", text1);
 					printf("	printf\(\"%%s \",\" %s);\n",text1);
 					}
 
 {BG}*OUTPUT{BG}+{LABEL}+		{
+					bzero(label,256);
 					sscanf(yytext," OUTPUT %s", label);
 					printf("	printf\(\"%%d \", %s);\n",label);
 				}
 {BG}*INPUT{BG}+{LABEL}+		{
+					bzero(label,256);
 					sscanf(yytext," INPUT %s", label);
 					printf("	scanf\(\"%%d\", &%s);\n",label);
 				}
 
 {BG}*INTEGER{BG}+{LABEL}+	{
+					bzero(label,256);
 					sscanf(yytext," INTEGER %s", label);
 					printf("int %s;\n", label);
 				}
@@ -54,6 +57,7 @@ LETTER		[A-Z]
 {BG}*BEGIN		printf("{\n");
 {BG}*END		printf("}\n");
 {BG}*GOTO{BG}+{LABEL}+	{ 
+				bzero(label,256);
 				sscanf(yytext," GOTO %s", label); 
 				printf("	{ asm(\"pause\");goto %s;}\n", label); 
 			}
