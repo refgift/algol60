@@ -1,8 +1,10 @@
-LABELDECL	[A-Z]+[0-9]*":"
+LABELDECL	[A-Z]+[0-9]*":"2
 LABEL		[A-Z]+[0-9]*
 BG		[ \t\n]
 ARITMETICS	[+-/*]
-CONDITIONALS  	[<>!=]
+CONDITIONALS  	[<>!=?]
+DENOTER		["]
+DENOTATION	["]+.+["]+
 BOOLEAN		TRUE|FALSE
 DIGIT		[0-9]
 LETTER		[A-Z]
@@ -12,27 +14,64 @@ LETTER		[A-Z]
 	static char text2[256];
 	static char text3[256];
 	static char text4[256];
+	static int integer1;
+
+	struct types {
+		char * label;
+		int type;
+	};
+
+	static struct types vars[10000];
+	static int tp;
+	static int type;
 %}
 
 %%
-{BG}*OUTPUT{BG}+\".+\"		{
-					bzero(text1,256);
-					sscanf(yytext," OUTPUT \"%256c\"", text1);
-					printf("	printf\(\"%%s \",\" %s);\n",text1);
-					}
+{BG}*OUTPUT{BG}+\".+\"          {                                                                                                                                                                              
+                                        bzero(label,256);                                                                                                                                                      
+                                        sscanf(yytext," OUTPUT \"%256c\"", text1);                                                                                                                             
+                                        printf("        printf\(\"%%s \",\" %s);\n",text1);                                                                                                                    
+                                        }
 
 {BG}*OUTPUT{BG}+{LABEL}+		{
+	
+					bzero(label,256);
 					sscanf(yytext," OUTPUT %s", label);
-					printf("	printf\(\"%%d \", %s);\n",label);
+					for (int i=0;i<tp;i++) {
+						if (vars[i].label==label) {
+							type = vars[i].type;
+							break;
+						}
+					}
+					if (type==0) printf("\n\tprintf\(\"\\r%%d \", %s);\n",label);
+					else if (type==1) printf("\n\tprintf\(\"\\r%%s\", %s);\n",label);
+					else REJECT;
 				}
 {BG}*INPUT{BG}+{LABEL}+		{
-					sscanf(yytext," INPUT %s", label);
-					printf("	scanf\(\"%%d\", &%s);\n",label);
+					bzero(text1,256);
+					bzero(label,256);
+					sscanf(yytext," INPUT %s",label);
+					printf("\tscanf\(\" %%d \", %s);\n",label);
 				}
 
 {BG}*INTEGER{BG}+{LABEL}+	{
+					bzero(label,256);
 					sscanf(yytext," INTEGER %s", label);
 					printf("int %s;\n", label);
+					vars[tp].label=label;
+					vars[tp++].type=0;
+				}
+
+{BG}*DENOTED{BG}+{LABEL}+	{
+					bzero(label,256);
+					sscanf(yytext," DENOTED %s", label);
+					printf("static char %s[256];\n", label);
+					vars[tp].label=label;
+					vars[tp++].type=1;
+				}
+
+{BG}*IF{BG}*{DENOTATION}+{BG}*[?]{BG}+{DENOTATION}+{BG}*THEN+	{
+
 				}
 {BG}*IF{BG}*.+{BG}*THEN+	{
 					bzero(text1,256);
@@ -41,7 +80,7 @@ LETTER		[A-Z]
 					sscanf(yytext," IF %s %s %s THEN", text1, text2 , text3);
 					printf("	if ( %s %s %s )", text1,text2,text3);
 				}
-{BG}*{LABEL}+{BG}*:={BG}*({LETTER}|{DIGIT})+{BG}*{ARITMETICS}*{BG}*({LETTER}|{DIGIT})*	{
+{BG}*{LABEL}+{BG}*:={BG}*({LETTER}|{DIGIT})+{BG}*{ARITMETICS}+{BG}*({LETTER}|{DIGIT})*	{
 					bzero(text1,256);
 					bzero(text2,256);
 					bzero(text3,256);
@@ -50,7 +89,14 @@ LETTER		[A-Z]
 					//printf("%s Scan Count: %d\n",yytext, s);
 					printf("\t%s=%s %s %s ; \n",text1, text2, text3 , text4);
 				}
-
+{BG}*{LABEL}+{BG}*:={BG}*{DENOTATION}+[;]*	 	{
+							bzero(label,256);
+							bzero(text1,256);
+							int s = sscanf(yytext, "%s := \" %[^\"] \"", label, text1);
+							if (s==2) printf("\tstrcpy(%s,\" %s \");", label, text1);
+							else printf("\tError: parsed %d tokens %s\n",s, yytext);
+							}
+		
 {BG}*BEGIN		printf("{\n");
 {BG}*END		printf("}\n");
 {BG}*GOTO{BG}+{LABEL}+	{ 
@@ -67,6 +113,7 @@ int main(void)
 	printf("/* first Generated C code */\n");
 	printf("#include <stdlib.h>\n");
 	printf("#include <stdio.h>\n");
+	printf("#include <string.h>\n");	
 	printf("int main(void) {\n");
 	yylex();
 	printf("	return(0);\n");
