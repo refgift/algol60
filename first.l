@@ -27,14 +27,15 @@ LETTER		[A-Z]
 %}
 
 %%
-{BG}*OUTPUT{BG}+\".+\"          {                                                                                                                                                                              
-                                        bzero(label,256);                                                                                                                                                      
-                                        sscanf(yytext," OUTPUT \"%256c\"", text1);                                                                                                                             
-                                        printf("        printf\(\"%%s \",\" %s);\n",text1);                                                                                                                    
-                                        }
+
+{BG}*OUTPUT{BG}+\".+\"		{
+					bzero(label,256);
+					sscanf(yytext," OUTPUT \"%256c\"", text1);
+					printf("	printf\(\"%%s \",\" %s);\n",text1);
+					}
 
 {BG}*OUTPUT{BG}+{LABEL}+		{
-	
+
 					bzero(label,256);
 					sscanf(yytext," OUTPUT %s", label);
 					for (int i=0;i<tp;i++) {
@@ -47,11 +48,11 @@ LETTER		[A-Z]
 					else if (type==1) printf("\n\tprintf\(\"\\r%%s\", %s);\n",label);
 					else REJECT;
 				}
+
 {BG}*INPUT{BG}+{LABEL}+		{
-					bzero(text1,256);
 					bzero(label,256);
-					sscanf(yytext," INPUT %s",label);
-					printf("\tscanf\(\" %%d \", %s);\n",label);
+					sscanf(yytext," INPUT %s", label);
+					printf("	scanf\(\"%%d\", &%s);\n",label);
 				}
 
 {BG}*INTEGER{BG}+{LABEL}+	{
@@ -100,8 +101,9 @@ LETTER		[A-Z]
 {BG}*BEGIN		printf("{\n");
 {BG}*END		printf("}\n");
 {BG}*GOTO{BG}+{LABEL}+	{ 
+				bzero(label,256);
 				sscanf(yytext," GOTO %s", label); 
-				printf("	goto %s;\n", label); 
+				printf("	{ asm(\"pause\");goto %s;}\n", label); 
 			}
 ^{LABELDECL}		printf("%s\n",yytext);
 {BG}*			;
