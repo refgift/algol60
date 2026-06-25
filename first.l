@@ -17,7 +17,7 @@ LETTER		[A-Z]
 	static int integer1;
 
 	struct types {
-		char * label;
+		char label[256];
 		int type;
 	};
 
@@ -27,6 +27,15 @@ LETTER		[A-Z]
 %}
 
 %%
+
+{BG}*COUNT{BG}+({LABEL}|{DENOTATION})+	{
+						if (yytext[0]=='"') integer1=strlen(yytext);
+
+					}
+{BG}*LABEL{BG}+:={BG}*COUNT	{
+					
+
+				}
 
 {BG}*OUTPUT{BG}+\".+\"		{
 					bzero(label,256);
@@ -39,7 +48,7 @@ LETTER		[A-Z]
 					bzero(label,256);
 					sscanf(yytext," OUTPUT %s", label);
 					for (int i=0;i<tp;i++) {
-						if (vars[i].label==label) {
+						if (strcmp(vars[i].label,label)==0) {
 							type = vars[i].type;
 							break;
 						}
@@ -59,7 +68,7 @@ LETTER		[A-Z]
 					bzero(label,256);
 					sscanf(yytext," INTEGER %s", label);
 					printf("int %s;\n", label);
-					vars[tp].label=label;
+					strcpy(vars[tp].label,label);
 					vars[tp++].type=0;
 				}
 
@@ -67,7 +76,7 @@ LETTER		[A-Z]
 					bzero(label,256);
 					sscanf(yytext," DENOTED %s", label);
 					printf("static char %s[256];\n", label);
-					vars[tp].label=label;
+					strcpy(vars[tp].label,label);
 					vars[tp++].type=1;
 				}
 
