@@ -61,7 +61,17 @@ LETTER		[A-Z]
 {BG}*INPUT{BG}+{LABEL}+		{
 					bzero(label,256);
 					sscanf(yytext," INPUT %s", label);
-					printf("	scanf\(\"%%d\", &%s);\n",label);
+					for (int i=0;i<tp;i++) {
+						if (strcmp(vars[i].label,label)==0) {					
+							type = vars[i].type;
+							break;
+						}
+					}
+					if (type==0) printf("\n\tscanf\(\" %%d \", &%s);\n",label);
+					else if (type==1) printf("\n\tscanf\(\" %%256c \", %s);\n",label);
+					else REJECT;
+
+
 				}
 
 {BG}*INTEGER{BG}+{LABEL}+	{

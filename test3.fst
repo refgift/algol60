@@ -1,9 +1,11 @@
 BEGIN
         DENOTED TITLE;
-        TITLE := "TEST 3 FOR DENOTED VARIABLES\n";
-        DENOTED A;
-        A := "Big string is a denoted thing.\n";
-
-        OUTPUT TITLE;
+        TITLE := "ENTER A TEXT WITHOUT QUOTES, CTRL-D to finish FOR  DENOTED VARIABLE TEST 3\n";
+ 
+        OUTPUT TITLE;      
+	
+	DENOTED A;
+	INPUT A;
+       
         OUTPUT A
-NED
+END
