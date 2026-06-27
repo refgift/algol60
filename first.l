@@ -1,4 +1,4 @@
-LABELDECL	[A-Z]+[0-9]*":"2
+LABELDECL	[A-Z]+[0-9]*":"
 LABEL		[A-Z]+[0-9]*
 BG		[ \t\n]
 ARITMETICS	[+-/*]
@@ -32,10 +32,10 @@ LETTER		[A-Z]
 						if (yytext[0]=='"') integer1=strlen(yytext);
 
 					}
-{BG}*LABEL{BG}+:={BG}*COUNT	{
+
 					
 
-				}
+
 
 {BG}*OUTPUT{BG}+\".+\"		{
 					bzero(label,256);
@@ -53,8 +53,8 @@ LETTER		[A-Z]
 							break;
 						}
 					}
-					if (type==0) printf("\n\tprintf\(\"\\r%%d \", %s);\n",label);
-					else if (type==1) printf("\n\tprintf\(\"\\r%%s\", %s);\n",label);
+					if (type==0) printf("\n\tprintf\(\"%%d \", %s);\n",label);
+					else if (type==1) printf("\n\tprintf\(\"%%s\", %s);\n",label);
 					else REJECT;
 				}
 
@@ -77,7 +77,7 @@ LETTER		[A-Z]
 {BG}*INTEGER{BG}+{LABEL}+	{
 					bzero(label,256);
 					sscanf(yytext," INTEGER %s", label);
-					printf("int %s;\n", label);
+					printf("static int %s;\n", label);
 					strcpy(vars[tp].label,label);
 					vars[tp++].type=0;
 				}
@@ -100,7 +100,7 @@ LETTER		[A-Z]
 					sscanf(yytext," IF %s %s %s THEN", text1, text2 , text3);
 					printf("	if ( %s %s %s )", text1,text2,text3);
 				}
-{BG}*{LABEL}+{BG}*:={BG}*({LETTER}|{DIGIT})+{BG}*{ARITMETICS}+{BG}*({LETTER}|{DIGIT})*	{
+{BG}*{LABEL}+{BG}*":="+{BG}*({LETTER}|{DIGIT})+{BG}*{ARITMETICS}*{BG}*({LETTER}|{DIGIT})*[;]*	{
 					bzero(text1,256);
 					bzero(text2,256);
 					bzero(text3,256);
@@ -124,7 +124,7 @@ LETTER		[A-Z]
 				sscanf(yytext," GOTO %s", label); 
 				printf("	{ asm(\"pause\");goto %s;}\n", label); 
 			}
-^{LABELDECL}		printf("%s\n",yytext);
+^{LABELDECL}+		printf("%s\n",yytext);
 {BG}*			;
 ";"			;
 .			printf("?");
