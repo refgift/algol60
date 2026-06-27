@@ -27,6 +27,9 @@ LETTER		[A-Z]
 %}
 
 %%
+{BG}*YIELD[;]*                  {                                                                                                                                                                              
+                                        printf("\n\tasm\(\"pause;\");\n");                                                                                                                                     
+                                } 
 
 {BG}*COUNT{BG}+({LABEL}|{DENOTATION})+	{
 						if (yytext[0]=='"') integer1=strlen(yytext);
@@ -122,7 +125,7 @@ LETTER		[A-Z]
 {BG}*GOTO{BG}+{LABEL}+	{ 
 				bzero(label,256);
 				sscanf(yytext," GOTO %s", label); 
-				printf("	{ asm(\"pause\");goto %s;}\n", label); 
+				printf("	goto %s;\n", label); 
 			}
 ^{LABELDECL}+		printf("%s\n",yytext);
 {BG}*			;
